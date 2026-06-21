@@ -1,0 +1,16 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="720" fill="#050505"/>
+  <rect x="28" y="28" width="1224" height="664" rx="18" fill="url(#paint0_radial)" stroke="rgba(255,255,255,0.14)"/>
+  <path d="M578 270L760 360L578 450V270Z" fill="rgba(39,245,255,0.86)"/>
+  <circle cx="640" cy="360" r="190" stroke="rgba(39,245,255,0.28)" stroke-width="2"/>
+  <circle cx="640" cy="360" r="256" stroke="rgba(107,77,255,0.25)" stroke-width="2"/>
+  <text x="640" y="588" text-anchor="middle" fill="rgba(255,255,255,0.82)" font-family="Arial, sans-serif" font-size="40" font-weight="700">CREATIVE THUMBNAIL</text>
+  <text x="640" y="635" text-anchor="middle" fill="rgba(39,245,255,0.82)" font-family="Arial, sans-serif" font-size="24">Replace with short film / content thumbnail</text>
+  <defs>
+    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(640 360) rotate(90) scale(500 760)">
+      <stop stop-color="#123a70"/>
+      <stop offset="0.5" stop-color="#12122d"/>
+      <stop offset="1" stop-color="#050505"/>
+    </radialGradient>
+  </defs>
+</svg>
