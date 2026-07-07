@@ -154,23 +154,35 @@ function Loader() {
 }
 
 function ParticleField() {
-  const [count, setCount] = useState(42);
+  const [count, setCount] = useState(32);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsVisible(document.visibilityState === "visible");
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
-      if (w < 768) {
-        setCount(8);
+      const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      if (w < 768 || isTouch) {
+        setCount(6);
       } else if (w < 1024) {
-        setCount(20);
+        setCount(12);
       } else {
-        setCount(42);
+        setCount(32);
       }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  if (!isVisible) return null;
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -659,21 +671,28 @@ export function PortfolioExperience() {
   });
 
   useEffect(() => {
-    // Initialize Lenis smooth scroll
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      syncTouch: true
-    });
+    const isMobileOrTouch = window.innerWidth < 768 || "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    
+    let lenis: Lenis | null = null;
+    let tickerCb: ((time: number) => void) | null = null;
 
-    lenis.on("scroll", ScrollTrigger.update);
+    if (!isMobileOrTouch) {
+      // Initialize Lenis smooth scroll
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        syncTouch: false
+      });
 
-    const tickerCb = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-    gsap.ticker.add(tickerCb);
-    gsap.ticker.lagSmoothing(0);
+      lenis.on("scroll", ScrollTrigger.update);
+
+      tickerCb = (time: number) => {
+        lenis?.raf(time * 1000);
+      };
+      gsap.ticker.add(tickerCb);
+      gsap.ticker.lagSmoothing(0);
+    }
 
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -682,7 +701,14 @@ export function PortfolioExperience() {
         e.preventDefault();
         const targetElement = document.querySelector(anchor.hash) as HTMLElement;
         if (targetElement) {
-          lenis.scrollTo(targetElement, { offset: -20, duration: 1.4 });
+          if (lenis) {
+            lenis.scrollTo(targetElement, { offset: -20, duration: 1.4 });
+          } else {
+            const yOffset = -20;
+            const rect = targetElement.getBoundingClientRect();
+            const y = rect.top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
         }
       }
     };
@@ -701,8 +727,12 @@ export function PortfolioExperience() {
 
     return () => {
       document.removeEventListener("click", handleAnchorClick);
-      gsap.ticker.remove(tickerCb);
-      lenis.destroy();
+      if (tickerCb) {
+        gsap.ticker.remove(tickerCb);
+      }
+      if (lenis) {
+        lenis.destroy();
+      }
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);

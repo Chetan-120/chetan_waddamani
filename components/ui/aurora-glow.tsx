@@ -9,7 +9,9 @@ export function AuroraGlow() {
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
-      if (w < 768) {
+      const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      
+      if (w < 768 || isTouch) {
         setDevice("mobile");
       } else if (w < 1024) {
         setDevice("tablet");
@@ -25,12 +27,13 @@ export function AuroraGlow() {
 
   if (device === "mobile") {
     return (
-      <div className="aurora-container opacity-[0.15] pointer-events-none">
+      <div className="aurora-container opacity-[0.05] pointer-events-none">
         <div 
           className="aurora-layer" 
           style={{ 
-            "--aurora-duration": "50s",
-            filter: "blur(40px)" 
+            "--aurora-duration": "60s",
+            filter: "blur(25px)",
+            willChange: "transform"
           } as CSSProperties} 
         />
       </div>
@@ -39,12 +42,13 @@ export function AuroraGlow() {
 
   if (device === "tablet") {
     return (
-      <div className="aurora-container opacity-[0.25] pointer-events-none">
+      <div className="aurora-container opacity-[0.15] pointer-events-none">
         <div 
           className="aurora-layer" 
           style={{ 
-            "--aurora-duration": "35s",
-            filter: "blur(60px)" 
+            "--aurora-duration": "45s",
+            filter: "blur(50px)",
+            willChange: "transform"
           } as CSSProperties} 
         />
       </div>
@@ -57,9 +61,11 @@ export function AuroraGlow() {
         className="aurora-layer" 
         style={{ 
           "--aurora-duration": "22s",
-          filter: "blur(80px)" 
+          filter: "blur(80px)",
+          willChange: "transform"
         } as CSSProperties} 
       />
     </div>
   );
 }
+

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 
 interface MagneticProps {
   children: React.ReactNode;
@@ -10,6 +10,9 @@ interface MagneticProps {
 
 export function Magnetic({ children, range = 50 }: MagneticProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [enabled, setEnabled] = useState(false);
+  const rectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
+  
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -17,10 +20,29 @@ export function Magnetic({ children, range = 50 }: MagneticProps) {
   const springX = useSpring(x, springConfig);
   const springY = useSpring(y, springConfig);
 
+  useEffect(() => {
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    const isMobileOrTablet = window.innerWidth < 1024;
+    if (!isTouch && !isMobileOrTablet) {
+      setEnabled(true);
+    }
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (!enabled || !ref.current) return;
+    rectRef.current = ref.current.getBoundingClientRect();
+  };
+
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
+    if (!enabled || !ref.current) return;
+    
+    const rect = rectRef.current || ref.current.getBoundingClientRect();
+    if (!rectRef.current) {
+      rectRef.current = rect;
+    }
+    
     const { clientX, clientY } = e;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const { left, top, width, height } = rect;
     const centerX = left + width / 2;
     const centerY = top + height / 2;
     const distanceX = clientX - centerX;
@@ -28,7 +50,6 @@ export function Magnetic({ children, range = 50 }: MagneticProps) {
 
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
     if (distance < range) {
-      // Pull element 30% towards the mouse position
       x.set(distanceX * 0.3);
       y.set(distanceY * 0.3);
     } else {
@@ -38,6 +59,8 @@ export function Magnetic({ children, range = 50 }: MagneticProps) {
   };
 
   const handleMouseLeave = () => {
+    if (!enabled) return;
+    rectRef.current = null;
     x.set(0);
     y.set(0);
   };
@@ -45,12 +68,14 @@ export function Magnetic({ children, range = 50 }: MagneticProps) {
   return (
     <motion.div
       ref={ref}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ x: springX, y: springY }}
+      style={enabled ? { x: springX, y: springY } : {}}
       className="inline-block"
     >
       {children}
     </motion.div>
   );
 }
+

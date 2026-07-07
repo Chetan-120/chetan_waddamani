@@ -6,6 +6,7 @@ import { ArrowUp } from "lucide-react";
 
 export function BackToTopOrb() {
   const containerRef = useRef<HTMLAnchorElement>(null);
+  const rectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   
@@ -33,7 +34,9 @@ export function BackToTopOrb() {
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
-      if (w < 768) {
+      const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      
+      if (w < 768 || isTouch) {
         setDevice("mobile");
       } else if (w < 1024) {
         setDevice("tablet");
@@ -42,34 +45,32 @@ export function BackToTopOrb() {
       }
     };
 
+    let rafId: number | null = null;
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight;
-      const winHeight = window.innerHeight;
-      const totalScrollable = docHeight - winHeight;
-      const scrollPercent = totalScrollable > 0 ? scrollTop / totalScrollable : 0;
+      if (rafId) cancelAnimationFrame(rafId);
       
-      setScrollProgress(Math.min(1, Math.max(0, scrollPercent)));
+      rafId = requestAnimationFrame(() => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight;
+        const winHeight = window.innerHeight;
+        const totalScrollable = docHeight - winHeight;
+        const scrollPercent = totalScrollable > 0 ? scrollTop / totalScrollable : 0;
+        
+        setScrollProgress(Math.min(1, Math.max(0, scrollPercent)));
+        setIsVisible(scrollPercent > 0.2);
+        setIsNearBottom(scrollPercent > 0.85 && scrollPercent < 0.98);
 
-      // State 1 & 2: Beyond 20% scroll
-      setIsVisible(scrollPercent > 0.2);
-
-      // State 4: Near bottom (85% to 98%)
-      setIsNearBottom(scrollPercent > 0.85 && scrollPercent < 0.98);
-
-      // State 5: Footer reached
-      // Check if scroll is at 98% or very close to bottom
-      const atBottom = scrollPercent >= 0.98 || (winHeight + scrollTop >= docHeight - 25);
-      if (atBottom) {
-        if (!hasPulsed) {
-          setIsExpanded(true);
-          setHasPulsed(true);
+        const atBottom = scrollPercent >= 0.98 || (winHeight + scrollTop >= docHeight - 25);
+        if (atBottom) {
+          if (!hasPulsed) {
+            setIsExpanded(true);
+            setHasPulsed(true);
+          }
+        } else if (scrollPercent < 0.94) {
+          setHasPulsed(false);
+          setIsExpanded(false);
         }
-      } else if (scrollPercent < 0.94) {
-        // Reset state when scrolling up
-        setHasPulsed(false);
-        setIsExpanded(false);
-      }
+      });
     };
 
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -87,6 +88,7 @@ export function BackToTopOrb() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", handleScroll);
       mediaQuery.removeEventListener("change", handleQueryChange);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, [hasPulsed]);
 
@@ -100,11 +102,23 @@ export function BackToTopOrb() {
     }
   }, [isExpanded]);
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (device === "mobile" || device === "tablet" || prefersReducedMotion || !containerRef.current) return;
+    rectRef.current = containerRef.current.getBoundingClientRect();
+  };
+
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (device === "mobile" || prefersReducedMotion || !containerRef.current) return;
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (device === "mobile" || device === "tablet" || isTouch || prefersReducedMotion || !containerRef.current) return;
+
+    const rect = rectRef.current || containerRef.current.getBoundingClientRect();
+    if (!rectRef.current) {
+      rectRef.current = rect;
+    }
 
     const { clientX, clientY } = e;
-    const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+    const { left, top, width, height } = rect;
     const centerX = left + width / 2;
     const centerY = top + height / 2;
     const distanceX = clientX - centerX;
@@ -114,11 +128,9 @@ export function BackToTopOrb() {
     const range = isExpanded ? 120 : 80;
 
     if (distance < range) {
-      // Magnetic pull: move up to 35% of distance
       x.set(distanceX * 0.35);
       y.set(distanceY * 0.35);
 
-      // Subtle rotation response based on cursor angle
       const angle = Math.atan2(distanceY, distanceX) * (180 / Math.PI);
       rotateVal.set(angle * 0.12);
     } else {
@@ -130,15 +142,15 @@ export function BackToTopOrb() {
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+    rectRef.current = null;
     x.set(0);
     y.set(0);
     rotateVal.set(0);
   };
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Add ripple
     if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
+    const rect = rectRef.current || containerRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
     const id = Date.now();
@@ -150,8 +162,6 @@ export function BackToTopOrb() {
     setRipples((prev) => prev.filter((r) => r.id !== id));
   };
 
-  // Circumference for stroke dash calculations
-  // radius = 22px
   const radius = 22;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - scrollProgress * circumference;
@@ -160,8 +170,8 @@ export function BackToTopOrb() {
     <motion.a
       ref={containerRef}
       href="#home"
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       style={{
@@ -189,7 +199,7 @@ export function BackToTopOrb() {
       <div className="absolute inset-0 bg-gradient-to-tr from-cyan/40 via-violet/40 to-rose-500/20 rounded-full" />
       
       {/* Glass Inner Container */}
-      <div className="relative w-full h-full flex items-center bg-ink/75 backdrop-blur-xl rounded-full overflow-hidden">
+      <div className="relative w-full h-full flex items-center bg-ink/75 backdrop-blur-2xl rounded-full overflow-hidden">
         {/* Shiny Glass Reflection Sheet */}
         {!prefersReducedMotion && (
           <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/[0.05] to-transparent pointer-events-none" />
@@ -215,7 +225,7 @@ export function BackToTopOrb() {
           ))}
         </div>
 
-        {/* Circular Progress & Arrow (aligned left, constant sizing) */}
+        {/* Circular Progress & Arrow */}
         <div 
           className="relative flex items-center justify-center flex-shrink-0 z-10"
           style={{ 
@@ -226,7 +236,6 @@ export function BackToTopOrb() {
         >
           {/* SVG Progress Circle */}
           <svg className="absolute inset-0 -rotate-90 w-full h-full p-1" viewBox="0 0 48 48">
-            {/* Background path */}
             <circle
               cx="24"
               cy="24"
@@ -235,17 +244,19 @@ export function BackToTopOrb() {
               strokeWidth="2.5"
               fill="transparent"
             />
-            {/* Progress path */}
-            <motion.circle
-              cx="24"
-              cy="24"
-              r={radius}
-              className="stroke-cyan"
-              strokeWidth="2.5"
-              fill="transparent"
-              strokeDasharray={circumference}
-              style={{ strokeDashoffset }}
-            />
+            {/* Avoid unnecessary SVG progress updates when hidden */}
+            {isVisible && (
+              <motion.circle
+                cx="24"
+                cy="24"
+                r={radius}
+                className="stroke-cyan"
+                strokeWidth="2.5"
+                fill="transparent"
+                strokeDasharray={circumference}
+                style={{ strokeDashoffset }}
+              />
+            )}
           </svg>
 
           {/* Arrow Icon */}
@@ -269,21 +280,22 @@ export function BackToTopOrb() {
       </div>
 
       {/* Subtle Aurora Pulsing Glow Layer Behind Orb */}
-      {!prefersReducedMotion && (isNearBottom || isExpanded) && (
+      {!prefersReducedMotion && isVisible && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ 
-            opacity: [0.3, 0.65, 0.3], 
-            scale: [0.95, 1.15, 0.95] 
+            opacity: isHovered ? [0.4, 0.75, 0.4] : [0.2, 0.45, 0.2], 
+            scale: isHovered ? [1.02, 1.18, 1.02] : [0.96, 1.08, 0.96] 
           }}
           transition={{
-            duration: 2.2,
+            duration: 3,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute -inset-4 bg-gradient-to-tr from-cyan/30 via-violet/20 to-transparent blur-[16px] -z-10 rounded-full pointer-events-none"
+          className="absolute -inset-4 bg-gradient-to-tr from-cyan/20 via-violet/15 to-transparent blur-[14px] -z-10 rounded-full pointer-events-none"
         />
       )}
     </motion.a>
   );
 }
+

@@ -6,10 +6,12 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 interface TiltCardProps {
   children: React.ReactNode;
   className?: string;
+  max?: number;
 }
 
-export function TiltCard({ children, className = "" }: TiltCardProps) {
+export function TiltCard({ children, className = "", max = 8 }: TiltCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const rectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -22,7 +24,9 @@ export function TiltCard({ children, className = "" }: TiltCardProps) {
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
-      if (w < 768) {
+      const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      
+      if (w < 768 || isTouch) {
         setDevice("mobile");
       } else if (w < 1024) {
         setDevice("tablet");
@@ -48,30 +52,39 @@ export function TiltCard({ children, className = "" }: TiltCardProps) {
     };
   }, []);
 
+  const handleMouseEnter = () => {
+    if (device !== "desktop" || prefersReducedMotion || !cardRef.current) return;
+    rectRef.current = cardRef.current.getBoundingClientRect();
+  };
+
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (device !== "desktop" || prefersReducedMotion) return;
-    if (!cardRef.current) return;
+    if (device !== "desktop" || prefersReducedMotion || !cardRef.current) return;
+
+    const rect = rectRef.current || cardRef.current.getBoundingClientRect();
+    if (!rectRef.current) {
+      rectRef.current = rect;
+    }
 
     const { clientX, clientY } = e;
-    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
+    const { left, top, width, height } = rect;
 
     const x = clientX - left - width / 2;
     const y = clientY - top - height / 2;
 
-    // Maximum 8 degrees of rotation
-    const factorY = (x / (width / 2)) * 8;
-    const factorX = -(y / (height / 2)) * 8;
+    const factorY = (x / (width / 2)) * max;
+    const factorX = -(y / (height / 2)) * max;
 
     rotateX.set(factorX);
     rotateY.set(factorY);
   };
 
   const handleMouseLeave = () => {
+    rectRef.current = null;
     rotateX.set(0);
     rotateY.set(0);
   };
 
-  if (device === "mobile" || prefersReducedMotion) {
+  if (device === "mobile" || device === "tablet" || prefersReducedMotion) {
     return (
       <div ref={cardRef} className={className}>
         {children}
@@ -82,6 +95,7 @@ export function TiltCard({ children, className = "" }: TiltCardProps) {
   return (
     <motion.div
       ref={cardRef}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
@@ -95,3 +109,4 @@ export function TiltCard({ children, className = "" }: TiltCardProps) {
     </motion.div>
   );
 }
+

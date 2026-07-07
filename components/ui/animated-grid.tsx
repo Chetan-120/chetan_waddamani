@@ -6,6 +6,7 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export function AnimatedGrid() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const rectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   
   const mouseX = useMotionValue(0);
@@ -18,19 +19,25 @@ export function AnimatedGrid() {
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
-      if (w < 768) {
+      const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      
+      if (w < 768 || isTouch) {
         setDevice("mobile");
       } else if (w < 1024) {
         setDevice("tablet");
       } else {
         setDevice("desktop");
       }
+
+      if (containerRef.current) {
+        rectRef.current = containerRef.current.getBoundingClientRect();
+      }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
+      const rect = rectRef.current || (containerRef.current ? containerRef.current.getBoundingClientRect() : null);
+      if (!rect) return;
       const { clientX, clientY } = e;
-      const rect = containerRef.current.getBoundingClientRect();
       const relativeX = clientX - rect.left;
       const relativeY = clientY - rect.top;
       mouseX.set(relativeX);
@@ -39,11 +46,19 @@ export function AnimatedGrid() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
+
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    const isMobileOrTablet = window.innerWidth < 1024 || isTouch;
+
+    if (!isMobileOrTablet) {
+      window.addEventListener("mousemove", handleMouseMove);
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", handleMouseMove);
+      if (!isMobileOrTablet) {
+        window.removeEventListener("mousemove", handleMouseMove);
+      }
     };
   }, [mouseX, mouseY]);
 
@@ -60,24 +75,22 @@ export function AnimatedGrid() {
         style={{
           backgroundSize: `${gridPatternSize}px ${gridPatternSize}px`,
           backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
-                            linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)`
+                            linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)`,
+          willChange: "transform"
         } as CSSProperties}
       />
 
-      {/* Interactive spotlight glow grid (Desktop & Tablet only) */}
-      {device !== "mobile" && (
+      {/* Interactive spotlight glow grid (Desktop only) */}
+      {device === "desktop" && (
         <motion.div
           className="absolute inset-0"
           style={{
             backgroundImage: `linear-gradient(to right, rgba(39, 245, 255, 0.08) 1px, transparent 1px),
                               linear-gradient(to bottom, rgba(39, 245, 255, 0.08) 1px, transparent 1px)`,
             backgroundSize: `${gridPatternSize}px ${gridPatternSize}px`,
-            WebkitMaskImage: device === "desktop" 
-              ? `radial-gradient(circle 280px at ${smoothMouseX}px ${smoothMouseY}px, black 30%, transparent 100%)`
-              : "radial-gradient(circle 350px at center, black 20%, transparent 90%)",
-            maskImage: device === "desktop" 
-              ? `radial-gradient(circle 280px at ${smoothMouseX}px ${smoothMouseY}px, black 30%, transparent 100%)`
-              : "radial-gradient(circle 350px at center, black 20%, transparent 90%)"
+            WebkitMaskImage: `radial-gradient(circle 280px at ${smoothMouseX}px ${smoothMouseY}px, black 30%, transparent 100%)`,
+            maskImage: `radial-gradient(circle 280px at ${smoothMouseX}px ${smoothMouseY}px, black 30%, transparent 100%)`,
+            willChange: "mask-image, WebkitMaskImage, transform"
           }}
         />
       )}
@@ -86,6 +99,7 @@ export function AnimatedGrid() {
       {device === "desktop" && (
         <motion.div 
           className="absolute left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan/20 to-transparent z-[1]"
+          style={{ willChange: "transform" }}
           animate={{
             y: ["0%", "100%", "0%"]
           }}
@@ -99,3 +113,4 @@ export function AnimatedGrid() {
     </div>
   );
 }
+
