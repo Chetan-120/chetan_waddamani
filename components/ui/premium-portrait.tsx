@@ -10,6 +10,7 @@ interface FloatingBadgeProps {
   className?: string;
   badgeX: any;
   badgeY: any;
+  z?: number;
 }
 
 function FloatingBadge({
@@ -17,16 +18,18 @@ function FloatingBadge({
   delay = 0,
   className = "",
   badgeX,
-  badgeY
+  badgeY,
+  z = 40
 }: FloatingBadgeProps) {
   return (
     <motion.div
-      style={{ x: badgeX, y: badgeY }}
+      style={{ x: badgeX, y: badgeY, z, transformStyle: "preserve-3d" }}
       className={`absolute z-30 pointer-events-none ${className}`}
     >
       <motion.span
         className="inline-block rounded-full border border-white/10 bg-[#050505]/60 px-3.5 py-1.5 text-[10px] font-mono font-bold tracking-wider text-white/80 backdrop-blur-md hover:border-cyan/30 transition-colors shadow-glow select-none"
         animate={{ y: [0, -6, 0] }}
+        style={{ transformStyle: "preserve-3d" }}
         transition={{
           duration: 5,
           repeat: Infinity,
@@ -42,6 +45,7 @@ function FloatingBadge({
 
 export function PremiumPortrait() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const centerRef = useRef({ x: 0, y: 0 });
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -54,8 +58,9 @@ export function PremiumPortrait() {
   const portraitX = useSpring(useTransform(mouseX, [-400, 400], [-8, 8]), springConfig);
   const portraitY = useSpring(useTransform(mouseY, [-400, 400], [-8, 8]), springConfig);
   
-  const rotateX = useSpring(useTransform(mouseY, [-400, 400], [3, -3]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-400, 400], [-3, 3]), springConfig);
+  // Constrain maximum tilt rotation to exactly 2.5 degrees
+  const rotateX = useSpring(useTransform(mouseY, [-400, 400], [2.5, -2.5]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-400, 400], [-2.5, 2.5]), springConfig);
 
   // Independent badge spring mappings
   const badge1X = useSpring(useTransform(mouseX, [-400, 400], [-10, 10]), springConfig);
@@ -76,7 +81,11 @@ export function PremiumPortrait() {
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
-      if (w < 768) {
+      const h = window.innerHeight;
+      centerRef.current = { x: w / 2, y: h / 2 };
+      
+      const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      if (w < 768 || isTouch) {
         setDevice("mobile");
       } else if (w < 1024) {
         setDevice("tablet");
@@ -88,10 +97,8 @@ export function PremiumPortrait() {
     const handleMouseMove = (e: MouseEvent) => {
       if (device !== "desktop") return;
       const { clientX, clientY } = e;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      mouseX.set(clientX - w / 2);
-      mouseY.set(clientY - h / 2);
+      mouseX.set(clientX - centerRef.current.x);
+      mouseY.set(clientY - centerRef.current.y);
     };
 
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -100,8 +107,11 @@ export function PremiumPortrait() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
-    mediaQuery.addEventListener("change", handleQueryChange);
+
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (window.innerWidth >= 1024 && !isTouch) {
+      window.addEventListener("mousemove", handleMouseMove);
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -113,19 +123,26 @@ export function PremiumPortrait() {
   return (
     <div ref={containerRef} className="relative flex flex-col items-center select-none w-full">
       
-      {/* Outer bounding box of portrait - aligned bottom-right and overflowing slightly */}
-      <div className="relative aspect-[3/4] w-[280px] xs:w-[310px] sm:w-[340px] md:w-[390px] lg:w-[460px] xl:w-[520px] mx-auto lg:ml-auto lg:mr-[-40px] xl:mr-[-60px] overflow-visible">
+      {/* Outer bounding box of portrait - aligned bottom-right and configured for 3D depth */}
+      <div 
+        className="relative aspect-[3/4] w-[280px] xs:w-[310px] sm:w-[340px] md:w-[390px] lg:w-[460px] xl:w-[520px] mx-auto lg:ml-auto lg:mr-[-40px] xl:mr-[-60px] overflow-visible"
+        style={{ transformStyle: "preserve-3d", perspective: 1200 }}
+      >
         
-        {/* Radial Ambient Glow behind portrait (illuminates the subject from behind) */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[350px] w-[350px] sm:h-[450px] sm:w-[450px] bg-[radial-gradient(circle,rgba(6,182,212,0.12)_0%,rgba(124,58,237,0.08)_40%,transparent_70%)] blur-[40px] pointer-events-none z-0" />
+        {/* Layer 2: Radial Ambient Glow behind portrait, translated back in 3D */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[350px] w-[350px] sm:h-[450px] sm:w-[450px] bg-[radial-gradient(circle,rgba(6,182,212,0.12)_0%,rgba(124,58,237,0.08)_40%,transparent_70%)] blur-[40px] pointer-events-none" 
+          style={{ transform: "translate3d(-50%, -50%, -40px)" }}
+        />
 
-        {/* Floating Cutout Portrait (no overflow-hidden parent wrapper, no cards, no containers) */}
+        {/* Layer 1: Floating Cutout Portrait, translated forward in 3D space */}
         <motion.div
           style={{ 
             x: device === "desktop" ? portraitX : 0, 
             y: device === "desktop" ? portraitY : 0,
             rotateX: device === "desktop" && !prefersReducedMotion ? rotateX : 0,
             rotateY: device === "desktop" && !prefersReducedMotion ? rotateY : 0,
+            z: 20,
             transformStyle: "preserve-3d",
             WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%), linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)",
             WebkitMaskComposite: "source-in",
@@ -134,7 +151,7 @@ export function PremiumPortrait() {
           }}
           animate={prefersReducedMotion ? {} : { y: [0, -8, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", repeatType: "reverse" }}
-          className="absolute inset-0 w-full h-full z-10"
+          className="absolute inset-0 w-full h-full"
         >
           <Image
             src="/profile-portrait.png"
@@ -142,18 +159,18 @@ export function PremiumPortrait() {
             fill
             className="object-cover pointer-events-none scale-[1.02] origin-bottom"
             priority
-            sizes="(max-w-768px) 280px, (max-w-1024px) 390px, 520px"
+            sizes="(max-width: 768px) 280px, (max-width: 1024px) 390px, 520px"
           />
         </motion.div>
 
-        {/* Floating Glass Identity Badges (Desktop & Tablet only) - positioned to avoid face */}
+        {/* Layer 4: Floating Glass Identity Badges with staggered translateZ properties (Desktop & Tablet only) */}
         {device !== "mobile" && (
           <>
-            <FloatingBadge name="AI Builder" delay={0} className="top-[12%] left-[-16%]" badgeX={badge1X} badgeY={badge1Y} />
-            <FloatingBadge name="Full Stack Developer" delay={1} className="top-[22%] right-[-14%]" badgeX={badge2X} badgeY={badge2Y} />
-            <FloatingBadge name="AI Enthusiast" delay={2} className="top-[45%] left-[-20%]" badgeX={badge3X} badgeY={badge3Y} />
-            <FloatingBadge name="Creative Creator" delay={3} className="top-[55%] right-[-18%]" badgeX={badge4X} badgeY={badge4Y} />
-            <FloatingBadge name="Technology Innovator" delay={4} className="bottom-[18%] left-[-12%]" badgeX={badge5X} badgeY={badge5Y} />
+            <FloatingBadge name="AI Builder" delay={0} className="top-[12%] left-[-16%]" badgeX={badge1X} badgeY={badge1Y} z={40} />
+            <FloatingBadge name="Full Stack Developer" delay={1} className="top-[22%] right-[-14%]" badgeX={badge2X} badgeY={badge2Y} z={60} />
+            <FloatingBadge name="AI Enthusiast" delay={2} className="top-[45%] left-[-20%]" badgeX={badge3X} badgeY={badge3Y} z={45} />
+            <FloatingBadge name="Creative Creator" delay={3} className="top-[55%] right-[-18%]" badgeX={badge4X} badgeY={badge4Y} z={55} />
+            <FloatingBadge name="Technology Innovator" delay={4} className="bottom-[18%] left-[-12%]" badgeX={badge5X} badgeY={badge5Y} z={35} />
           </>
         )}
       </div>
