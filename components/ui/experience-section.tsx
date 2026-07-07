@@ -27,13 +27,18 @@ export function ExperienceSection() {
 
         <div className="grid gap-6 md:grid-cols-2 max-w-5xl mx-auto">
           {experiencesData.map((exp, idx) => (
-            <TiltCard key={exp.role + exp.organization} className="w-full">
+            <TiltCard key={exp.role + exp.organization} className="w-full" max={2}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: idx * 0.08, ease: "easeOut" }}
-                className="flex flex-col justify-between h-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8 backdrop-blur-xl transition hover:border-cyan/20"
+                whileHover={{ 
+                  y: -8,
+                  boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255,255,255,0.02)",
+                  borderColor: "rgba(39, 245, 255, 0.25)"
+                }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="flex flex-col justify-between h-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8 backdrop-blur-xl"
               >
                 <div className="space-y-4">
                   {/* Top Badge & Icon */}

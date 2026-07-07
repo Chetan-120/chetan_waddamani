@@ -198,29 +198,40 @@ interface PreviewMockupProps {
 
 function PreviewMockup({ type, children, prefersReducedMotion, device }: PreviewMockupProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const rectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
+
+  const handleMouseEnter = () => {
+    if (device === "mobile" || prefersReducedMotion || !cardRef.current) return;
+    rectRef.current = cardRef.current.getBoundingClientRect();
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (device === "mobile" || prefersReducedMotion) return;
     const card = cardRef.current;
     if (!card) return;
 
-    const rect = card.getBoundingClientRect();
+    const rect = rectRef.current || card.getBoundingClientRect();
+    if (!rectRef.current) {
+      rectRef.current = rect;
+    }
     const width = rect.width;
     const height = rect.height;
     
     const x = e.clientX - rect.left - width / 2;
     const y = e.clientY - rect.top - height / 2;
 
-    const rotX = (y / (height / 2)) * -6;
-    const rotY = (x / (width / 2)) * 6;
+    // Limit maximum rotation to exactly 4 degrees
+    const rotX = (y / (height / 2)) * -4;
+    const rotY = (x / (width / 2)) * 4;
 
     setRotateX(rotX);
     setRotateY(rotY);
   };
 
   const handleMouseLeave = () => {
+    rectRef.current = null;
     setRotateX(0);
     setRotateY(0);
   };
@@ -232,62 +243,97 @@ function PreviewMockup({ type, children, prefersReducedMotion, device }: Preview
       {/* Backing Ambient Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 bg-gradient-to-tr from-cyan/15 to-violet/15 blur-[40px] opacity-70 rounded-full pointer-events-none" />
 
-      {/* Slow floating motion wrapper */}
-      <motion.div
-        animate={prefersReducedMotion ? {} : { y: [0, -8, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", repeatType: "reverse" }}
-        className="relative"
-      >
-        {/* Interactive mouse tilt wrapper */}
+      {/* Floating Shadow and Frame Wrapper */}
+      <div className="relative">
+        {/* Slow floating shadow layer synchronizing scale, blur, and opacity in reverse */}
+        {!prefersReducedMotion && (
+          <motion.div
+            animate={{ 
+              scale: [0.9, 1.05, 0.9], 
+              opacity: [0.35, 0.15, 0.35],
+              filter: ["blur(12px)", "blur(18px)", "blur(12px)"] 
+            }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", repeatType: "reverse" }}
+            className="absolute bottom-[-16px] left-[10%] right-[10%] h-[12px] bg-black/75 rounded-full z-0 pointer-events-none"
+          />
+        )}
+
+        {/* Slow floating motion wrapper */}
         <motion.div
-          ref={cardRef}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          animate={{ 
-            rotateX: prefersReducedMotion ? 0 : rotateX, 
-            rotateY: prefersReducedMotion ? 0 : rotateY 
-          }}
-          transition={{ type: "spring", stiffness: 150, damping: 20 }}
-          style={{ transformStyle: "preserve-3d", perspective: 1000 }}
-          className="relative cursor-pointer"
+          animate={prefersReducedMotion ? {} : { y: [0, -8, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", repeatType: "reverse" }}
+          className="relative z-10"
         >
-          {isPhone ? (
-            /* Smartphone Mockup Frame */
-            <div className="w-[260px] h-[520px] relative border-[8px] border-black bg-[#050505] rounded-[36px] shadow-2xl overflow-hidden flex flex-col pointer-events-none">
-              {/* Notch */}
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-3.5 bg-black rounded-full z-30 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#080808] border border-white/5 mr-4" />
-                <div className="w-1 h-1 rounded-full bg-[#0c0c0c] border border-white/5" />
-              </div>
-              {/* Screen */}
-              <div className="w-full h-full relative z-10 overflow-hidden">
-                {children}
-              </div>
-              {/* Glare */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent pointer-events-none z-20" />
-            </div>
-          ) : (
-            /* Browser Mockup Frame */
-            <div className="w-[310px] h-[225px] relative border-[6px] border-black bg-[#050505] rounded-xl shadow-2xl overflow-hidden flex flex-col pointer-events-none">
-              {/* Top controls */}
-              <div className="w-full flex items-center justify-between bg-[#0b0b0b] px-3 py-1.5 border-b border-white/5">
-                <div className="flex gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          {/* Interactive mouse tilt wrapper */}
+          <motion.div
+            ref={cardRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            animate={{ 
+              rotateX: prefersReducedMotion ? 0 : rotateX, 
+              rotateY: prefersReducedMotion ? 0 : rotateY 
+            }}
+            transition={{ type: "spring", stiffness: 150, damping: 20 }}
+            style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+            className="relative cursor-pointer"
+          >
+            {isPhone ? (
+              /* Smartphone Mockup Frame */
+              <div 
+                className="w-[260px] h-[520px] relative border-[8px] border-black bg-[#050505] rounded-[36px] shadow-2xl flex flex-col pointer-events-none"
+                style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+              >
+                {/* Notch */}
+                <div 
+                  className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-3.5 bg-black rounded-full z-30 flex items-center justify-center"
+                  style={{ transform: "translateZ(30px)" }}
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#080808] border border-white/5 mr-4" />
+                  <div className="w-1 h-1 rounded-full bg-[#0c0c0c] border border-white/5" />
                 </div>
-                <div className="w-16 h-2 bg-white/5 rounded-xs" />
+                {/* Screen content layer */}
+                <div className="w-full h-full relative z-10 overflow-hidden" style={{ transform: "translateZ(10px)", transformStyle: "preserve-3d" }}>
+                  {children}
+                </div>
+                {/* Glare glass overlay layer, translated forward to slide on tilt */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent pointer-events-none z-20" 
+                  style={{ transform: "translateZ(45px)" }}
+                />
               </div>
-              {/* Screen */}
-              <div className="w-full h-full relative z-10 overflow-hidden">
-                {children}
+            ) : (
+              /* Browser Mockup Frame */
+              <div 
+                className="w-[310px] h-[225px] relative border-[6px] border-black bg-[#050505] rounded-xl shadow-2xl flex flex-col pointer-events-none"
+                style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+              >
+                {/* Top controls */}
+                <div 
+                  className="w-full flex items-center justify-between bg-[#0b0b0b] px-3 py-1.5 border-b border-white/5"
+                  style={{ transform: "translateZ(15px)" }}
+                >
+                  <div className="flex gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  </div>
+                  <div className="w-16 h-2 bg-white/5 rounded-xs" />
+                </div>
+                {/* Screen content layer */}
+                <div className="w-full h-full relative z-10 overflow-hidden" style={{ transform: "translateZ(10px)", transformStyle: "preserve-3d" }}>
+                  {children}
+                </div>
+                {/* Glare glass overlay layer, translated forward to slide on tilt */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent pointer-events-none z-20" 
+                  style={{ transform: "translateZ(45px)" }}
+                />
               </div>
-              {/* Glare */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-transparent pointer-events-none z-20" />
-            </div>
-          )}
+            )}
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }

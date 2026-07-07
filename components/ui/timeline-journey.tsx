@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import { GraduationCap, Briefcase, Calendar, ChevronRight } from "lucide-react";
 
@@ -30,9 +30,13 @@ export function TimelineJourney() {
     restDelta: 0.001
   });
 
-  const filteredItems = timelineJourneyData.filter(
-    (item) => filter === "all" || item.type === filter
-  );
+  const filteredItems = useMemo(() => {
+    return timelineJourneyData.filter(
+      (item) => filter === "all" || item.type === filter
+    );
+  }, [filter]);
+
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   return (
     <section id="journey" className="section relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-[#050505] to-[#020202]">
@@ -83,6 +87,7 @@ export function TimelineJourney() {
             <AnimatePresence mode="popLayout">
               {filteredItems.map((item, index) => {
                 const isEven = index % 2 === 0;
+                const isActive = hoveredIdx === index;
                 return (
                   <motion.div
                     key={item.title + item.date}
@@ -96,16 +101,30 @@ export function TimelineJourney() {
                       isEven ? "md:flex-row-reverse" : ""
                     }`}
                   >
-                    {/* Node Dot marker */}
-                    <div className="absolute left-[9px] top-6 z-10 flex h-4 w-4 items-center justify-center rounded-full border border-cyan bg-[#050505] shadow-[0_0_12px_rgba(39,245,255,0.7)] md:left-1/2 md:-ml-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-cyan" />
+                    {/* Node Dot marker: active node glows and lifts slightly, inactive nodes remain flat/static */}
+                    <div 
+                      className={`absolute left-[9px] top-6 z-10 flex h-4 w-4 items-center justify-center rounded-full border bg-[#050505] md:left-1/2 md:-ml-2 transition-all duration-300 ${
+                        isActive 
+                          ? "border-cyan shadow-[0_0_15px_rgba(39,245,255,0.85)] scale-110 -translate-y-[2px]" 
+                          : "border-white/20 shadow-none scale-100"
+                      }`}
+                    >
+                      <div className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${isActive ? "bg-cyan" : "bg-white/20"}`} />
                     </div>
 
                     {/* Content Panel (aligned to side) */}
                     <div className="w-full pl-12 md:w-[46%] md:pl-0">
-                      <div className={`rounded-xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl transition hover:border-cyan/20 ${
-                        isEven ? "md:text-right" : "md:text-left"
-                      }`}>
+                      <div 
+                        onMouseEnter={() => setHoveredIdx(index)}
+                        onMouseLeave={() => setHoveredIdx(null)}
+                        className={`rounded-xl border p-6 backdrop-blur-xl transition-all duration-300 bg-white/[0.02] ${
+                          isActive 
+                            ? "border-cyan/30 shadow-[0_15px_30px_rgba(0,0,0,0.6)] -translate-y-1" 
+                            : "border-white/10 shadow-none"
+                        } ${
+                          isEven ? "md:text-right" : "md:text-left"
+                        }`}
+                      >
                         <div className={`flex items-center gap-2 mb-2 ${
                           isEven ? "md:justify-end" : "md:justify-start"
                         }`}>
