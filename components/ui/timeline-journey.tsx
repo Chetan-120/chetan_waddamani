@@ -117,7 +117,7 @@ export function TimelineJourney() {
                       <div 
                         onMouseEnter={() => setHoveredIdx(index)}
                         onMouseLeave={() => setHoveredIdx(null)}
-                        className={`rounded-xl border p-6 backdrop-blur-xl transition-all duration-300 bg-white/[0.02] ${
+                        className={`rounded-xl border p-6 backdrop-blur-sm md:backdrop-blur-xl transition-all duration-300 bg-white/[0.02] ${
                           isActive 
                             ? "border-cyan/30 shadow-[0_15px_30px_rgba(0,0,0,0.6)] -translate-y-1" 
                             : "border-white/10 shadow-none"

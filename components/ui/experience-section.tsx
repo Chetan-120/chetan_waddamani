@@ -38,7 +38,7 @@ export function ExperienceSection() {
                   borderColor: "rgba(39, 245, 255, 0.25)"
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="flex flex-col justify-between h-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8 backdrop-blur-xl"
+                 className="flex flex-col justify-between h-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8 backdrop-blur-sm md:backdrop-blur-xl"
               >
                 <div className="space-y-4">
                   {/* Top Badge & Icon */}
@@ -53,10 +53,13 @@ export function ExperienceSection() {
 
                   <div>
                     <h3 className="text-lg font-bold text-white tracking-tight leading-tight">{exp.role}</h3>
-                    <p className="text-xs font-semibold text-white/40 mt-1 uppercase tracking-wider font-mono">{exp.organization}</p>
+                    <div className="flex flex-wrap justify-between items-baseline gap-2 mt-1">
+                      <p className="text-xs font-semibold text-white/40 uppercase tracking-wider font-mono">{exp.organization}</p>
+                      {exp.duration && <span className="text-[10px] text-cyan/70 font-mono">{exp.duration}</span>}
+                    </div>
                   </div>
 
-                  <p className="text-xs leading-relaxed text-white/60 font-sans border-t border-white/5 pt-3">
+                  <p className="text-xs leading-relaxed text-white/60 font-sans border-t border-white/5 pt-3 whitespace-pre-line">
                     {exp.description}
                   </p>
                 </div>

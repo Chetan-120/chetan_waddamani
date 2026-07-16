@@ -49,6 +49,7 @@ export interface ExperienceItem {
   organization: string;
   description: string;
   learnings: string[];
+  duration?: string;
 }
 
 export interface TimelineItem {
@@ -176,17 +177,22 @@ export const projectsData: ProjectItem[] = [
 // Centralized Experience / Internship Data
 export const experiencesData: ExperienceItem[] = [
   {
-    role: "AI for Sustainability Intern",
-    organization: "1M1B (One Million for One Billion)",
-    description: "Collaborated on designing practical AI-driven prototypes and utility models to promote sustainability awareness and support green initiatives.",
+    role: "AI for Sustainability Virtual Intern",
+    organization: "1M1B Foundation × IBM SkillsBuild × AICTE",
+    duration: "May 2026 – June 2026",
+    description: "• Completed an AI-focused virtual internship exploring Responsible AI, Generative AI, Retrieval-Augmented Generation (RAG), and Agentic AI.\n\n• Designed and developed Rakshika, an AI-powered women's safety platform focused on emergency assistance and location-based support.\n\n• Applied AI concepts to solve a real-world problem while learning ethical and responsible AI practices.",
     learnings: [
-      "Explored prompt-alignment mechanisms and client-side AI search utilities.",
-      "Designed clean interface models for green-sustainability catalogs."
+      "Responsible AI",
+      "Generative AI",
+      "Retrieval-Augmented Generation (RAG)",
+      "Agentic AI",
+      "Problem Solving"
     ]
   },
   {
     role: "Full Stack Development Intern",
     organization: "NullClass",
+    duration: "2023 – 2024",
     description: "Worked on building modular full-stack interfaces and backend endpoints utilizing MERN stack architectures.",
     learnings: [
       "Implemented modular dashboard views and dynamic data rendering routes.",
@@ -196,6 +202,7 @@ export const experiencesData: ExperienceItem[] = [
   {
     role: "Web Development Intern",
     organization: "Pravinya Infotech",
+    duration: "2023 – 2024",
     description: "Coded backend database features and responsive templates using PHP, MySQL, and CSS layouts.",
     learnings: [
       "Structured server-side queries and handled relational table setups.",
@@ -205,6 +212,7 @@ export const experiencesData: ExperienceItem[] = [
   {
     role: "Content & Social Media Specialist",
     organization: "ClickNaukari",
+    duration: "2024 – 2025",
     description: "Designed marketing media templates, video recaps, and graphics to drive audience outreach.",
     learnings: [
       "Produced graphic designs in Canva and edited short-form highlight clips.",
@@ -261,13 +269,14 @@ export const timelineJourneyData: TimelineItem[] = [
   },
   {
     type: "experience",
-    title: "AI for Sustainability",
-    subtitle: "1M1B Sustainability Initiative",
-    date: "2026 - Present",
-    tags: ["AI Utilities", "Social Impact", "Green Tech"],
+    title: "AI for Sustainability Virtual Intern",
+    subtitle: "1M1B Foundation × IBM SkillsBuild × AICTE",
+    date: "May 2026 – June 2026",
+    tags: ["Responsible AI", "Generative AI", "RAG", "Agentic AI", "Problem Solving"],
     bullets: [
-      "Investigated practical ways AI can address ecological awareness and resource efficiency.",
-      "Prototyped clean, high-conversion green-commerce directory filters to reduce buyer friction."
+      "Completed an AI-focused virtual internship exploring Responsible AI, Generative AI, Retrieval-Augmented Generation (RAG), and Agentic AI.",
+      "Designed and developed Rakshika, an AI-powered women's safety platform focused on emergency assistance and location-based support.",
+      "Applied AI concepts to solve a real-world problem while learning ethical and responsible AI practices."
     ]
   },
   {

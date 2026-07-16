@@ -30,7 +30,7 @@ body {
   }
 
   .glass-panel {
-    @apply rounded-lg border border-white/10 bg-white/[0.055] p-7 shadow-card backdrop-blur-2xl transition duration-300;
+    @apply rounded-lg border border-white/10 bg-white/[0.055] p-7 shadow-card backdrop-blur-sm md:backdrop-blur-2xl transition duration-300;
   }
 
   .glass-panel:hover {
@@ -42,7 +42,7 @@ body {
   }
 
   .secondary-button {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded border border-white/[0.14] bg-white/[0.08] px-5 py-3 text-sm font-semibold text-white backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan/40 hover:bg-cyan/10 focus:outline-none focus:ring-2 focus:ring-cyan/40;
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded border border-white/[0.14] bg-white/[0.08] px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm md:backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan/40 hover:bg-cyan/10 focus:outline-none focus:ring-2 focus:ring-cyan/40;
   }
 
   .icon-tile {
@@ -58,7 +58,7 @@ body {
   }
 
   .project-card {
-    @apply flex min-h-[420px] flex-col rounded-lg border border-white/10 bg-[linear-gradient(150deg,rgba(255,255,255,0.09),rgba(255,255,255,0.035))] p-6 shadow-card backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan/[0.28] hover:shadow-glow md:p-7;
+    @apply flex min-h-[420px] flex-col rounded-lg border border-white/10 bg-[linear-gradient(150deg,rgba(255,255,255,0.09),rgba(255,255,255,0.035))] p-6 shadow-card backdrop-blur-sm md:backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan/[0.28] hover:shadow-glow md:p-7;
   }
 
   .project-link {
@@ -66,7 +66,7 @@ body {
   }
 
   .profile-card {
-    @apply mx-auto w-full max-w-sm rounded-lg border border-white/10 bg-white/[0.06] p-4 shadow-card backdrop-blur-2xl lg:ml-auto;
+    @apply mx-auto w-full max-w-sm rounded-lg border border-white/10 bg-white/[0.06] p-4 shadow-card backdrop-blur-sm md:backdrop-blur-2xl lg:ml-auto;
   }
 
   .profile-photo-frame {
@@ -83,7 +83,7 @@ body {
   }
 
   .timeline-item {
-    @apply relative rounded-lg border border-white/10 bg-white/[0.045] p-6 backdrop-blur-xl;
+    @apply relative rounded-lg border border-white/10 bg-white/[0.045] p-6 backdrop-blur-sm md:backdrop-blur-xl;
   }
 
   .timeline-item::before {
@@ -104,7 +104,7 @@ body {
   }
 
   .cert-strip {
-    @apply flex flex-wrap justify-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl;
+    @apply flex flex-wrap justify-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm md:backdrop-blur-xl;
   }
 
   .cert-strip span {
@@ -112,7 +112,7 @@ body {
   }
 
   .creative-card {
-    @apply rounded-lg border border-white/10 bg-white/[0.045] p-4 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-cyan/25 hover:bg-white/[0.07] md:p-5;
+    @apply rounded-lg border border-white/10 bg-white/[0.045] p-4 backdrop-blur-sm md:backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-cyan/25 hover:bg-white/[0.07] md:p-5;
   }
 
   .creative-thumbnail {
@@ -128,7 +128,7 @@ body {
   }
 
   .stat-card {
-    @apply rounded-lg border border-white/10 bg-white/[0.045] p-6 backdrop-blur-xl;
+    @apply rounded-lg border border-white/10 bg-white/[0.045] p-6 backdrop-blur-sm md:backdrop-blur-xl;
   }
 
   .stat-card strong {
@@ -144,7 +144,7 @@ body {
   }
 
   .contact-card {
-    @apply rounded-lg border border-white/10 bg-white/[0.07] p-6 shadow-card backdrop-blur-2xl md:p-8;
+    @apply rounded-lg border border-white/10 bg-white/[0.07] p-6 shadow-card backdrop-blur-sm md:backdrop-blur-2xl md:p-8;
   }
 
   .contact-card label {
@@ -157,7 +157,7 @@ body {
 
 
   .stat-card {
-    @apply rounded-lg border border-white/10 bg-white/[0.045] p-6 backdrop-blur-xl;
+    @apply rounded-lg border border-white/10 bg-white/[0.045] p-6 backdrop-blur-sm md:backdrop-blur-xl;
   }
 
   .stat-card strong {
@@ -173,7 +173,7 @@ body {
   }
 
   .contact-card {
-    @apply rounded-lg border border-white/10 bg-white/[0.07] p-6 shadow-card backdrop-blur-2xl md:p-8;
+    @apply rounded-lg border border-white/10 bg-white/[0.07] p-6 shadow-card backdrop-blur-sm md:backdrop-blur-2xl md:p-8;
   }
 
   .contact-card label {

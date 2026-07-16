@@ -131,7 +131,7 @@ export function PremiumPortrait() {
         
         {/* Layer 2: Radial Ambient Glow behind portrait, translated back in 3D */}
         <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[350px] w-[350px] sm:h-[450px] sm:w-[450px] bg-[radial-gradient(circle,rgba(6,182,212,0.12)_0%,rgba(124,58,237,0.08)_40%,transparent_70%)] blur-[40px] pointer-events-none" 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-[200px] sm:h-[450px] sm:w-[450px] bg-[radial-gradient(circle,rgba(6,182,212,0.06)_0%,rgba(124,58,237,0.03)_40%,transparent_70%)] blur-[25px] md:blur-[40px] pointer-events-none" 
           style={{ transform: "translate3d(-50%, -50%, -40px)" }}
         />
 
@@ -144,12 +144,16 @@ export function PremiumPortrait() {
             rotateY: device === "desktop" && !prefersReducedMotion ? rotateY : 0,
             z: 20,
             transformStyle: "preserve-3d",
-            WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%), linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)",
-            WebkitMaskComposite: "source-in",
-            maskImage: "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%), linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)",
-            maskComposite: "intersect"
+            WebkitMaskImage: device === "mobile"
+              ? "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
+              : "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%), linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)",
+            WebkitMaskComposite: device === "mobile" ? undefined : "source-in",
+            maskImage: device === "mobile"
+              ? "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
+              : "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%), linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)",
+            maskComposite: device === "mobile" ? undefined : "intersect"
           }}
-          animate={prefersReducedMotion ? {} : { y: [0, -8, 0] }}
+          animate={prefersReducedMotion || device === "mobile" ? {} : { y: [0, -8, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", repeatType: "reverse" }}
           className="absolute inset-0 w-full h-full"
         >

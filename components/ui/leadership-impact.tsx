@@ -27,7 +27,7 @@ export function LeadershipImpact() {
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="flex flex-col justify-between h-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-10 backdrop-blur-xl transition-all duration-300 hover:border-white/20 shadow-[0_0_20px_rgba(39,245,255,0.1)]"
+              className="flex flex-col justify-between h-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-10 backdrop-blur-sm md:backdrop-blur-xl transition-all duration-300 hover:border-white/20 shadow-[0_0_20px_rgba(39,245,255,0.1)]"
             >
               <div className="space-y-6">
                 {/* Icon & Role Tag */}

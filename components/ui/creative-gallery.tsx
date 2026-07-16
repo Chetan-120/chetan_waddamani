@@ -103,7 +103,7 @@ export function CreativeGallery() {
                     whileHover="hover"
                     exit="exit"
                     viewport={{ once: true, margin: isMobile ? "-40px" : "-60px" }}
-                    className="group rounded-xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-xl flex flex-col justify-between min-h-[260px] space-y-4 w-full h-full"
+                    className="group rounded-xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-sm md:backdrop-blur-xl flex flex-col justify-between min-h-[260px] space-y-4 w-full h-full"
                   >
                   <div className="space-y-3">
                     <div className="flex items-center gap-1.5 text-cyan">

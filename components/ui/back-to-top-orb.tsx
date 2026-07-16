@@ -199,7 +199,7 @@ export function BackToTopOrb() {
       <div className="absolute inset-0 bg-gradient-to-tr from-cyan/40 via-violet/40 to-rose-500/20 rounded-full" />
       
       {/* Glass Inner Container */}
-      <div className="relative w-full h-full flex items-center bg-ink/75 backdrop-blur-2xl rounded-full overflow-hidden">
+      <div className="relative w-full h-full flex items-center bg-ink/75 backdrop-blur-sm md:backdrop-blur-2xl rounded-full overflow-hidden">
         {/* Shiny Glass Reflection Sheet */}
         {!prefersReducedMotion && (
           <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/[0.05] to-transparent pointer-events-none" />

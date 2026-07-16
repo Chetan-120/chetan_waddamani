@@ -238,6 +238,55 @@ function PreviewMockup({ type, children, prefersReducedMotion, device }: Preview
 
   const isPhone = type === "phone";
 
+  if (device === "mobile" || prefersReducedMotion) {
+    return (
+      <div className="flex justify-center items-center relative py-6 w-full">
+        {/* Backing Ambient Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 bg-gradient-to-tr from-cyan/15 to-violet/15 blur-[40px] opacity-70 rounded-full pointer-events-none" />
+
+        <div className="relative">
+          <div className="relative z-10">
+            {isPhone ? (
+              /* Smartphone Mockup Frame */
+              <div className="w-[260px] h-[520px] relative border-[8px] border-black bg-[#050505] rounded-[36px] shadow-2xl flex flex-col pointer-events-none">
+                {/* Notch */}
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-3.5 bg-black rounded-full z-30 flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#080808] border border-white/5 mr-4" />
+                  <div className="w-1 h-1 rounded-full bg-[#0c0c0c] border border-white/5" />
+                </div>
+                {/* Screen content layer */}
+                <div className="w-full h-full relative z-10 overflow-hidden">
+                  {children}
+                </div>
+                {/* Glare glass overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent pointer-events-none z-20" />
+              </div>
+            ) : (
+              /* Browser Mockup Frame */
+              <div className="w-[310px] h-[225px] relative border-[6px] border-black bg-[#050505] rounded-xl shadow-2xl flex flex-col pointer-events-none">
+                {/* Top controls */}
+                <div className="w-full flex items-center justify-between bg-[#0b0b0b] px-3 py-1.5 border-b border-white/5">
+                  <div className="flex gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  </div>
+                  <div className="w-16 h-2 bg-white/5 rounded-xs" />
+                </div>
+                {/* Screen content layer */}
+                <div className="w-full h-full relative z-10 overflow-hidden">
+                  {children}
+                </div>
+                {/* Glare glass overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent pointer-events-none z-20" />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-center items-center relative py-6 w-full">
       {/* Backing Ambient Glow */}
@@ -393,7 +442,7 @@ export function CaseStudies() {
             return (
               <div 
                 key={project.title}
-                className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-10 backdrop-blur-xl transition duration-500 hover:border-cyan/20 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(39,245,255,0.02)]"
+                className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-10 backdrop-blur-sm md:backdrop-blur-xl transition duration-500 hover:border-cyan/20 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(39,245,255,0.02)]"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                   

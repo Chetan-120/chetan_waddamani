@@ -235,7 +235,7 @@ function Header() {
   }, []);
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/[0.08] bg-ink/55 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.4)] overflow-hidden">
+    <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/[0.08] bg-ink/55 backdrop-blur-sm md:backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.4)] overflow-hidden">
       {/* Glass Reflection sheet highlight */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none z-0" />
       
@@ -245,7 +245,7 @@ function Header() {
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 md:px-8 relative z-10">
         <Magnetic>
           <a href="#home" className="flex items-center gap-3 font-semibold group select-none">
-            <span className="flex h-11 w-11 items-center justify-center rounded-[12px] border border-white/[0.08] bg-white/[0.04] backdrop-blur-md text-sm font-bold tracking-[-0.02em] text-white transition-all duration-300 group-hover:scale-1.03 group-hover:border-cyan/30 group-hover:text-cyan group-hover:shadow-[0_0_15px_rgba(39,245,255,0.25)]">
+            <span className="flex h-11 w-11 items-center justify-center rounded-[12px] border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm md:backdrop-blur-md text-sm font-bold tracking-[-0.02em] text-white transition-all duration-300 group-hover:scale-1.03 group-hover:border-cyan/30 group-hover:text-cyan group-hover:shadow-[0_0_15px_rgba(39,245,255,0.25)]">
               CW
             </span>
             <span className="hidden text-sm text-white/80 group-hover:text-white sm:block transition duration-300">
