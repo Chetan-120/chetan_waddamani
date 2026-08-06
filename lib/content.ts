@@ -29,6 +29,11 @@ export interface ProjectItem {
   githubUrl: string;
   liveUrl?: string;
   mockupType: "phone" | "browser";
+  // Flagship showcase attributes
+  architecture?: string[];
+  features?: string[];
+  highlights?: string[];
+  challenges?: { challenge: string; solution: string }[];
 }
 
 export interface CreativeWorkItem {
@@ -141,6 +146,49 @@ export const socials = [
 
 // Centralized Project Showcase Data
 export const projectsData: ProjectItem[] = [
+  {
+    title: "LUXE",
+    category: "Premium MERN E-Commerce Platform",
+    description: "A luxury-inspired full-stack e-commerce platform built using the MERN stack. It delivers a premium shopping experience with secure JWT authentication, role-based admin dashboard, cart/wishlist management, product filtering/search, and integrated Razorpay payments.",
+    problem: "Developing a performant full-stack e-commerce system requires handling role-based dashboard permissions, sync states across cart and wishlist databases, and secure checkout verifications without creating race conditions.",
+    solution: "Coded a robust MERN architecture with state synchronization via Zustand, secure cookie session tokens, and a direct gateway verification tunnel mapping checkout outcomes backend-side.",
+    tech: ["React 19", "Vite", "Tailwind CSS v4", "React Router v7", "Zustand", "Node.js", "Express.js", "MongoDB", "Razorpay"],
+    githubUrl: "https://github.com/Chetan-120/luxe-ecommerce",
+    liveUrl: "https://luxe-ecommerce-vert.vercel.app",
+    mockupType: "browser",
+    features: [
+      "JWT Authentication with Secure Cookie Session Storage",
+      "Role-Based Admin Dashboard (Add/Edit/Delete products & manage users)",
+      "Shopping Cart & Wishlist persistence",
+      "Advanced Product Search & Multi-category filtering",
+      "Razorpay Payment Gateway Integration with verification tunnels",
+      "Fully Responsive Design with Framer Motion animations"
+    ],
+    architecture: [
+      "Client-Side Routing powered by React Router v7 & Client State via Zustand",
+      "REST API Server using Express.js middleware structures & CORS controls",
+      "Data Modeling and Relational Validation with MongoDB Atlas & Mongoose"
+    ],
+    highlights: [
+      "Engineered secure sessions using HTTP-only cookies to prevent XSS vulnerability vectors.",
+      "Optimized MongoDB index searches for text indexing across product titles and tags.",
+      "Built responsive shopping templates tested across diverse mobile viewports."
+    ],
+    challenges: [
+      {
+        challenge: "Syncing cart and wishlist states across client memory and server databases during guest transitions.",
+        solution: "Integrated Zustand state middleware with persistent local storage synced dynamically upon authentication."
+      },
+      {
+        challenge: "Preventing payment tampering or incomplete checkout records during payment gateway handshakes.",
+        solution: "Implemented Razorpay webhook validation on Node.js using signature verification to confirm transactions backend-side."
+      },
+      {
+        challenge: "Managing complex dashboards and tables for admins without loading heavy charting dependencies.",
+        solution: "Coded custom modular tables and layout cards with pure CSS grids and optimized state rendering."
+      }
+    ]
+  },
   {
     title: "Rakshika",
     category: "AI-Powered Safety Platform",

@@ -409,9 +409,19 @@ function Hero() {
         <div className="max-w-5xl">
           <motion.div
             variants={heroItemFadeUp}
-            className="mb-3 sm:mb-5 inline-flex items-center gap-2 rounded-full border border-cyan/20 bg-cyan/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-cyan"
+            className="mb-3 sm:mb-5 flex flex-wrap gap-2.5 items-center"
           >
-            <Sparkles size={12} className="animate-pulse" /> AI Builder & Creator
+            <span className="inline-flex items-center gap-2 rounded-full border border-cyan/20 bg-cyan/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-cyan">
+              <Sparkles size={12} className="animate-pulse" /> AI Builder & Creator
+            </span>
+            <Magnetic>
+              <a
+                href="#luxe-flagship"
+                className="inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/[0.1] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet transition duration-300 hover:border-cyan/40 hover:text-cyan hover:bg-cyan/[0.05]"
+              >
+                Latest Project &mdash; LUXE <ArrowUpRight size={10} />
+              </a>
+            </Magnetic>
           </motion.div>
           <motion.h1
             variants={heroItemFadeUp}

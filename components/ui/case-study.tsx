@@ -2,12 +2,85 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, CheckCircle2, ChevronRight, Mic, Users, Github, ExternalLink, AlertCircle, Lightbulb, Trophy } from "lucide-react";
+import { ShieldCheck, CheckCircle2, ChevronRight, Mic, Users, Github, ExternalLink, AlertCircle, Lightbulb, Trophy, ShoppingBag, Heart, CreditCard } from "lucide-react";
 import { Magnetic } from "./magnetic";
 
 // ────────────────────────────────────────────────────────
 // MOCKUPS
 // ────────────────────────────────────────────────────────
+
+function LuxeDashboard() {
+  return (
+    <div className="flex flex-col h-full bg-[#050505] text-left p-4 font-sans select-none justify-between text-white">
+      {/* Browser tab bar */}
+      <div className="flex justify-between items-center border-b border-white/5 pb-2 text-[8px] text-white/30 font-mono">
+        <span className="text-cyan">luxe-ecommerce.app/shop</span>
+        <div className="flex gap-2 items-center">
+          <span className="text-[7px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1 rounded">JWT: ACTIVE</span>
+          <span className="text-[7px] text-cyan bg-cyan/10 border border-cyan/20 px-1 rounded">ADMIN</span>
+        </div>
+      </div>
+
+      {/* Luxury Brand Header */}
+      <div className="flex justify-between items-center py-2 border-b border-white/[0.03]">
+        <span className="text-[10px] uppercase tracking-[0.25em] font-extrabold font-serif bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan/80">LUXE</span>
+        <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-1 text-[8px] text-white/60">
+            <Heart size={10} className="text-rose-500 fill-rose-500" />
+            <span>(3)</span>
+          </div>
+          <div className="flex items-center gap-1 text-[8px] text-cyan font-bold bg-cyan/10 px-1.5 py-0.5 rounded border border-cyan/25">
+            <ShoppingBag size={10} />
+            <motion.span 
+              animate={{ scale: [1, 1.15, 1] }} 
+              transition={{ duration: 2, repeat: Infinity }}
+            >(2)</motion.span>
+          </div>
+        </div>
+      </div>
+
+      {/* E-Commerce Product Cards */}
+      <div className="flex-1 my-2 space-y-2 overflow-hidden flex flex-col justify-center">
+        <div className="flex gap-2">
+          {/* Card 1 */}
+          <div className="flex-1 rounded-lg border border-white/5 bg-white/[0.01] p-1.5 flex flex-col justify-between">
+            <div className="aspect-[4/3] rounded bg-gradient-to-tr from-cyan/5 via-violet/5 to-transparent border border-white/5 flex items-center justify-center relative overflow-hidden">
+              <span className="text-[16px] text-cyan opacity-80">⌚</span>
+              <span className="absolute top-1 right-1 text-[5px] font-mono text-cyan bg-cyan/15 px-1 rounded border border-cyan/20">NEW</span>
+            </div>
+            <div className="mt-1 space-y-0.5">
+              <span className="block text-[7px] font-bold text-white/80 truncate">Chrono Elite</span>
+              <span className="block text-[6px] font-mono text-cyan">$1,250</span>
+            </div>
+          </div>
+          {/* Card 2 */}
+          <div className="flex-1 rounded-lg border border-white/5 bg-white/[0.01] p-1.5 flex flex-col justify-between">
+            <div className="aspect-[4/3] rounded bg-gradient-to-tr from-rose-500/5 via-violet/5 to-transparent border border-white/5 flex items-center justify-center relative overflow-hidden">
+              <span className="text-[16px] text-violet opacity-80">👜</span>
+              <span className="absolute top-1 right-1 text-[5px] font-mono text-rose-500 bg-rose-500/15 px-1 rounded border border-rose-500/20">HOT</span>
+            </div>
+            <div className="mt-1 space-y-0.5">
+              <span className="block text-[7px] font-bold text-white/80 truncate">Leather Bag</span>
+              <span className="block text-[6px] font-mono text-white/50">$890</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Footer (Razorpay Checkout Simulation) */}
+      <div className="border-t border-white/5 pt-2 flex justify-between items-center text-[7px] font-mono">
+        <div className="flex flex-col">
+          <span className="text-white/30 text-[5px] uppercase">Total Amount</span>
+          <span className="text-white/80 font-bold text-[8px]">$2,140</span>
+        </div>
+        <div className="flex items-center gap-1.5 bg-violet/20 border border-violet/30 text-violet-300 px-2 py-1 rounded">
+          <CreditCard size={9} className="text-violet" />
+          <span className="font-bold text-[5px] tracking-wide uppercase">CHECKOUT SECURE</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function UnifiedDashboard() {
   return (
@@ -390,6 +463,7 @@ function PreviewMockup({ type, children, prefersReducedMotion, device }: Preview
 import { projectsData, ProjectItem } from "@/lib/content";
 
 const MOCKUP_MAP: Record<string, React.ReactNode> = {
+  luxe: <LuxeDashboard />,
   rakshika: <UnifiedDashboard />,
   notesyncer: <NoteSyncerDashboard />,
   "brain battle": <BrainBattleDashboard />
@@ -418,6 +492,10 @@ export function CaseStudies() {
     };
   }, []);
 
+  // Filter projects to separate Flagship and Standard projects
+  const flagshipProject = projectsData.find((p) => p.title === "LUXE") || projectsData[0];
+  const standardProjects = projectsData.filter((p) => p.title !== "LUXE");
+
   return (
     <section id="projects" className="section relative overflow-hidden bg-black border-b border-white/10 py-24">
       {/* Background decoration */}
@@ -438,7 +516,179 @@ export function CaseStudies() {
         </div>
 
         <div className="space-y-16">
-          {projectsData.map((project, idx) => {
+          {/* Flagship Case Study for LUXE */}
+          {flagshipProject && (
+            <div
+              id="luxe-flagship"
+              className="group relative rounded-2xl border border-violet/20 bg-gradient-to-br from-violet/[0.02] via-ink to-cyan/[0.01] p-6 md:p-10 backdrop-blur-sm md:backdrop-blur-xl transition duration-500 hover:border-cyan/35 hover:-translate-y-1 hover:shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_35px_rgba(39,245,255,0.04)]"
+            >
+              {/* Subtle decoration tag */}
+              <div className="absolute top-4 right-6 inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/[0.08] px-3.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-violet-300 select-none">
+                <Trophy size={10} className="text-violet animate-pulse" /> Flagship Case Study
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                
+                {/* Left Column: Details */}
+                <div className="lg:col-span-7 space-y-6 select-text">
+                  <div>
+                    <span className="text-[10px] font-mono font-bold text-cyan/70 uppercase tracking-widest">
+                      Project 01 &mdash; {flagshipProject.category}
+                    </span>
+                    <h3 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight mt-1 bg-gradient-to-r from-white via-white to-cyan/80 bg-clip-text text-transparent">
+                      {flagshipProject.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed text-white/70 mt-4">
+                      {flagshipProject.description}
+                    </p>
+                  </div>
+
+                  {/* Problem & Solution block */}
+                  <div className="space-y-3 pt-4 border-t border-white/5 text-xs text-white/70">
+                    <div className="flex gap-2.5 items-start">
+                      <AlertCircle size={14} className="text-rose-500 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="block font-bold text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Problem Context</span>
+                        <p className="leading-relaxed">{flagshipProject.problem}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2.5 items-start">
+                      <CheckCircle2 size={14} className="text-cyan mt-0.5 shrink-0" />
+                      <div>
+                        <span className="block font-bold text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Solution Architecture</span>
+                        <p className="leading-relaxed">{flagshipProject.solution}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tech Stack pills */}
+                  <div className="space-y-3 pt-4 border-t border-white/5">
+                    <span className="block font-bold text-[9px] uppercase tracking-wider text-white/40 font-mono">Technology Stack</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {flagshipProject.tech.map((t) => (
+                        <span key={t} className="rounded border border-white/5 bg-white/[0.04] px-2.5 py-1 text-xs font-mono text-cyan/90">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Action links */}
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <Magnetic>
+                      <a
+                        href={flagshipProject.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded border border-white/10 bg-white/5 px-5 text-xs font-semibold text-white hover:bg-white/10 transition duration-300 shadow-sm"
+                      >
+                        <Github size={14} /> GitHub Repository
+                      </a>
+                    </Magnetic>
+
+                    {flagshipProject.liveUrl && (
+                      <Magnetic>
+                        <a
+                          href={flagshipProject.liveUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex h-10 items-center justify-center gap-2 rounded border border-cyan/40 bg-cyan/15 px-5 text-xs font-semibold text-cyan hover:bg-cyan/25 transition duration-300 shadow-[0_0_15px_rgba(39,245,255,0.15)]"
+                        >
+                          <ExternalLink size={14} /> View Live Demo
+                        </a>
+                      </Magnetic>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column: Premium Mockup Graphic */}
+                <div className="lg:col-span-5 flex flex-col justify-center items-center h-full pt-4 lg:pt-8">
+                  <PreviewMockup 
+                    type={flagshipProject.mockupType}
+                    prefersReducedMotion={prefersReducedMotion}
+                    device={device}
+                  >
+                    <LuxeDashboard />
+                  </PreviewMockup>
+                  <div className="mt-4 text-center">
+                    <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest">
+                      Live UI Screen Simulation
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Detailed Flagship Highlights & Challenges (Expands under columns) */}
+              <div className="mt-10 pt-8 border-t border-white/5 grid grid-cols-1 md:grid-cols-12 gap-8 text-xs">
+                
+                {/* Key Features & Architecture */}
+                <div className="md:col-span-6 space-y-6">
+                  <div className="space-y-3">
+                    <span className="block font-bold text-[9px] uppercase tracking-wider text-cyan font-mono">Key Features</span>
+                    <ul className="space-y-2 text-white/70 leading-relaxed font-sans">
+                      {flagshipProject.features?.map((feat, i) => (
+                        <li key={i} className="flex gap-2 items-start">
+                          <span className="text-cyan font-bold text-[10px] mt-0.5">•</span>
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <span className="block font-bold text-[9px] uppercase tracking-wider text-violet font-mono">Architecture & Deployment</span>
+                    <ul className="space-y-2 text-white/70 leading-relaxed font-sans">
+                      {flagshipProject.architecture?.map((arch, i) => (
+                        <li key={i} className="flex gap-2 items-start">
+                          <span className="text-violet font-bold text-[10px] mt-0.5">▪</span>
+                          <span>{arch}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <span className="block font-bold text-[9px] uppercase tracking-wider text-white/40 font-mono">Development Highlights</span>
+                    <ul className="space-y-2 text-white/75 leading-relaxed font-sans">
+                      {flagshipProject.highlights?.map((high, i) => (
+                        <li key={i} className="flex gap-2 items-start">
+                          <span className="text-cyan/80 text-[10px] mt-0.5">✔</span>
+                          <span>{high}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Challenges Faced & Solutions Implemented */}
+                <div className="md:col-span-6 space-y-4">
+                  <span className="block font-bold text-[9px] uppercase tracking-wider text-violet font-mono">Technical Challenges & Solutions</span>
+                  
+                  <div className="space-y-3">
+                    {flagshipProject.challenges?.map((item, idx) => (
+                      <div key={idx} className="rounded-lg border border-white/5 bg-white/[0.01] p-4 space-y-2">
+                        <div className="flex gap-2 items-start">
+                          <span className="text-[10px] font-bold text-rose-400 font-mono uppercase bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20">Challenge</span>
+                          <p className="text-white/80 font-sans leading-relaxed text-[11px]">{item.challenge}</p>
+                        </div>
+                        <div className="flex gap-2 items-start pt-1.5 border-t border-white/[0.03]">
+                          <span className="text-[10px] font-bold text-cyan font-mono uppercase bg-cyan/10 px-1.5 py-0.5 rounded border border-cyan/20">Solution</span>
+                          <p className="text-white/70 font-sans leading-relaxed text-[11px]">{item.solution}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          )}
+
+          {/* Standard Project Cards */}
+          {standardProjects.map((project, idx) => {
             return (
               <div 
                 key={project.title}
@@ -450,7 +700,7 @@ export function CaseStudies() {
                   <div className="lg:col-span-7 space-y-6 select-text">
                     <div>
                       <span className="text-[10px] font-mono font-bold text-cyan/70 uppercase tracking-widest">
-                        Project 0{idx + 1} &mdash; {project.category}
+                        Project 0{idx + 2} &mdash; {project.category}
                       </span>
                       <h3 className="text-3xl font-bold text-white tracking-tight mt-1">{project.title}</h3>
                       <p className="text-sm leading-relaxed text-white/60 mt-3">{project.description}</p>
